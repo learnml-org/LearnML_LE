@@ -3,6 +3,7 @@
 #include <lml_le/engine.hpp>
 #include <lml_le/errorcode.hpp>
 #include <lml_le/platform.hpp>
+#include <lml_le/sor.hpp>
 #include <lml_le/string.hpp>
 
 #include <fstream>
@@ -59,7 +60,9 @@ namespace lml_le
 	}
 	void logger::save(const std::basic_string<TCHAR>& path, bool include_additional_data) const
 	{
-		std::ofstream stream(path);
+		const std::basic_string<TCHAR> temp_path = get_temp_file();
+
+		std::ofstream stream(temp_path);
 		for (int i = 0; i < 6 && !stream; ++i)
 		{
 			using namespace std::chrono_literals;
@@ -98,6 +101,9 @@ namespace lml_le
 		{
 			l->save(stream, include_additional_data);
 		}
+
+		stream.close();
+		sor8_file(sor8_encrypt, path, temp_path, "LearnML Logging Engine");
 	}
 
 	std::basic_string<TCHAR> logger::autosave() const

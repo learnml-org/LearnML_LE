@@ -1,7 +1,10 @@
 #include <lml_le/sor.hpp>
 
+#include <lml_le/errorcode.hpp>
+
 #include <cassert>
 #include <cstring>
+#include <fstream>
 
 namespace lml_le
 {
@@ -67,6 +70,24 @@ namespace lml_le
 			*dest -= 30;
 
 			++dest, ++src;
+		}
+	}
+	void sor8_file(void(*func)(char*, const char*, std::size_t, const char*), const std::basic_string<TCHAR>& dest, const std::basic_string<TCHAR>& src, const char* key)
+	{
+		std::ifstream src_stream(src, std::ios::binary | std::ios::in);
+		std::ofstream dest_stream(dest, std::ios::binary | std::ios::out);
+
+		if (!src_stream) throw LML_LE_ERRORCODE_FAILED_TO_OPEN_FILE_SOR8ES;
+		if (!dest_stream) throw LML_LE_ERRORCODE_FAILED_TO_OPEN_FILE_SOR8ED;
+
+		char buffer[1024]{ 0, };
+
+		while (!src_stream.eof())
+		{
+			src_stream.read(buffer, sizeof(buffer));
+			std::size_t buffer_size = static_cast<std::size_t>(src_stream.gcount());
+			func(buffer, nullptr, buffer_size, key);
+			dest_stream.write(buffer, static_cast<std::streamsize>(buffer_size));
 		}
 	}
 }
