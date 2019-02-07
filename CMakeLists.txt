@@ -11,7 +11,7 @@ set(SOURCE_DIR "./src")
 set(OUTPUT_DIR "./bin")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR})
 
-include_directories(${INCLUDE_DIR})
+include_directories(${INCLUDE_DIR} ./mod/lml_pae/include)
 file(GLOB_RECURSE SOURCE_LIST ${SOURCE_DIR}/*.cpp)
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_LIST})
