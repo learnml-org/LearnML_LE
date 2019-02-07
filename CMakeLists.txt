@@ -16,5 +16,8 @@ file(GLOB_RECURSE SOURCE_LIST ${SOURCE_DIR}/*.cpp)
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_LIST})
 
+add_subdirectory(./mod/lml_pae)
+target_link_libraries(${PROJECT_NAME} LearnML_PAE)
+
 install(DIRECTORY ${INCLUDE_DIR}/lml_le DESTINATION include)
 install(TARGETS ${PROJECT_NAME} DESTINATION lib)

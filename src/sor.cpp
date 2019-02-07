@@ -72,7 +72,7 @@ namespace lml_le
 			++dest, ++src;
 		}
 	}
-	void sor8_file(void(*func)(char*, const char*, std::size_t, const char*), const std::basic_string<TCHAR>& dest, const std::basic_string<TCHAR>& src, const char* key)
+	void sor8_file(void(*func)(char*, const char*, std::size_t, const char*), const lml_pae::string& dest, const lml_pae::string& src, const char* key)
 	{
 		std::ifstream src_stream(src, std::ios::binary | std::ios::in);
 		std::ofstream dest_stream(dest, std::ios::binary | std::ios::out);

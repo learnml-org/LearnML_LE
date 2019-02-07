@@ -1,6 +1,6 @@
 #include <lml_le/external_error.hpp>
 
-#include <lml_le/string.hpp>
+#include <lml_pae/string.hpp>
 
 #include <cstring>
 #include <memory>
@@ -14,11 +14,10 @@ namespace lml_le
 	void external_error::save_prtd(std::ostream& stream) const
 	{
 		const std::string what = exception.what();
-		const std::string what_utf8 = encode_utf8(what);
-		const std::uint64_t what_size = static_cast<std::uint64_t>(what_utf8.size());
+		const std::uint64_t what_size = static_cast<std::uint64_t>(what.size());
 
 		stream.write(reinterpret_cast<const char*>(&what_size), sizeof(what_size));
-		stream.write(what_utf8.c_str(), static_cast<std::streamsize>(what_size));
+		stream.write(what.c_str(), static_cast<std::streamsize>(what_size));
 	}
 	void external_error::save_prtd_additional_data(std::ostream&) const
 	{}

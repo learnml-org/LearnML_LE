@@ -2,18 +2,19 @@
 
 #include <lml_le/engine.hpp>
 #include <lml_le/errorcode.hpp>
-#include <lml_le/platform.hpp>
 #include <lml_le/sor.hpp>
-#include <lml_le/string.hpp>
+#include <lml_pae/architecture.hpp>
+#include <lml_pae/filesystem.hpp>
+#include <lml_pae/os.hpp>
+#include <lml_pae/string.hpp>
 
 #include <fstream>
 #include <thread>
 #include <utility>
-#include <VersionHelpers.h>
 
 namespace lml_le
 {
-	log::log(log_type type, log_event event, const std::basic_string<TCHAR>& message, std::chrono::system_clock::time_point time)
+	log::log(log_type type, log_event event, const lml_pae::string& message, std::chrono::system_clock::time_point time)
 		: type(type), event(event), message(message), time(time)
 	{}
 
@@ -24,7 +25,7 @@ namespace lml_le
 		
 		const std::uint64_t message_size = static_cast<std::uint64_t>(message.size());
 		stream.write(reinterpret_cast<const char*>(&message_size), sizeof(message_size));
-		const std::string message_utf8 = encode_utf8(message);
+		const std::string message_utf8 = lml_pae::to_utf8(message);
 		stream.write(message_utf8.c_str(), static_cast<std::streamsize>(message_size));
 
 		const std::int64_t time = this->time.time_since_epoch().count();
@@ -54,13 +55,13 @@ namespace lml_le
 		logs_.push_back(std::move(log));
 	}
 
-	void logger::save(const std::basic_string<TCHAR>& path) const
+	void logger::save(const lml_pae::string& path) const
 	{
 		save(path, false);
 	}
-	void logger::save(const std::basic_string<TCHAR>& path, bool include_additional_data) const
+	void logger::save(const lml_pae::string& path, bool include_additional_data) const
 	{
-		const std::basic_string<TCHAR> temp_path = get_temp_file();
+		const lml_pae::string temp_path = lml_pae::get_temp_file();
 
 		std::ofstream stream(temp_path);
 		for (int i = 0; i < 6 && !stream; ++i)
@@ -84,14 +85,14 @@ namespace lml_le
 		stream.write(reinterpret_cast<const char*>(&include_additional_data), sizeof(include_additional_data));		//							(1 Bytes)
 		stream.write(reinterpret_cast<const char*>(&lml_le::version), sizeof(lml_le::version));						// Application Version		(8 Bytes)
 		
-		std::uint8_t buffer_u8 = static_cast<std::uint8_t>(architecture::target);
+		std::uint8_t buffer_u8 = static_cast<std::uint8_t>(lml_pae::architecture::target);
 		stream.write(reinterpret_cast<const char*>(&buffer_u8), sizeof(buffer_u8));									// Platform Architecture	(1 Bytes)
-		buffer_u8 = static_cast<std::uint8_t>(os::target);
+		buffer_u8 = static_cast<std::uint8_t>(lml_pae::os::target);
 		stream.write(reinterpret_cast<const char*>(&buffer_u8), sizeof(buffer_u8));									// Platform OS				(1 Bytes)
-		const std::string os_name = get_os_name();
-		const std::uint64_t os_name_size = static_cast<std::uint64_t>(os_name.size());
-		stream.write(reinterpret_cast<const char*>(&os_name_size), sizeof(os_name_size));							// Platform OS Name Size	(8 Bytes)
-		stream.write(os_name.c_str(), static_cast<std::streamsize>(os_name_size));									// Platform OS Name
+		const std::string os_info = lml_pae::get_os_info();
+		const std::uint64_t os_info_size = static_cast<std::uint64_t>(os_info.size());
+		stream.write(reinterpret_cast<const char*>(&os_info_size), sizeof(os_info_size));							// Platform OS Info Size	(8 Bytes)
+		stream.write(os_info.c_str(), static_cast<std::streamsize>(os_info_size));									// Platform OS Info
 
 		// Logs
 		const std::uint64_t count_of_logs(logs_.size());
@@ -106,11 +107,11 @@ namespace lml_le
 		sor8_file(sor8_encrypt, path, temp_path, "LearnML Logging Engine");
 	}
 
-	std::basic_string<TCHAR> logger::autosave() const
+	lml_pae::string logger::autosave() const
 	{
 		return autosave_;
 	}
-	void logger::autosave(const std::basic_string<TCHAR>& new_autosave)
+	void logger::autosave(const lml_pae::string& new_autosave)
 	{
 		autosave_ = new_autosave;
 	}

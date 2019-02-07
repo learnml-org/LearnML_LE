@@ -1,5 +1,7 @@
 #pragma once
 
+#include <lml_pae/string.hpp>
+
 #include <cstdint>
 #include <chrono>
 #include <exception>
@@ -8,7 +10,6 @@
 #include <memory>
 #include <string>
 #include <vector>
-#include <Windows.h>
 
 namespace lml_le
 {
@@ -37,7 +38,7 @@ namespace lml_le
 		virtual ~log() = default;
 
 	protected:
-		log(log_type type, log_event event, const std::basic_string<TCHAR>& message, std::chrono::system_clock::time_point time);
+		log(log_type type, log_event event, const lml_pae::string& message, std::chrono::system_clock::time_point time);
 
 	public:
 		log& operator=(const log&) = delete;
@@ -52,14 +53,14 @@ namespace lml_le
 	public:
 		log_type type = log_type::none;
 		log_event event = log_event::none;
-		std::basic_string<TCHAR> message;
+		lml_pae::string message;
 		std::chrono::system_clock::time_point time;
 	};
 
 	using log_ptr = std::unique_ptr<log>;
 
-#define LML_LE_LOG_BASE_PARAM				const std::basic_string<TCHAR>& message, std::chrono::system_clock::time_point time
-#define LML_LE_LOG_BASE_PARAM_MAKE_FUNC		const std::basic_string<TCHAR>& message
+#define LML_LE_LOG_BASE_PARAM				const lml_pae::string& message, std::chrono::system_clock::time_point time
+#define LML_LE_LOG_BASE_PARAM_MAKE_FUNC		const lml_pae::string& message
 #define LML_LE_LOG_BASE_INIT(type, event)	log(type, event, message, time)
 #define LML_LE_LOG_BASE_INIT_MAKE_FUNC		message, std::chrono::system_clock::now()
 
@@ -76,18 +77,18 @@ namespace lml_le
 	public:
 		void add_log(log_ptr&& log);
 		
-		void save(const std::basic_string<TCHAR>& path) const;
-		void save(const std::basic_string<TCHAR>& path, bool include_additional_data) const;
+		void save(const lml_pae::string& path) const;
+		void save(const lml_pae::string& path, bool include_additional_data) const;
 
 	public:
-		std::basic_string<TCHAR> autosave() const;
-		void autosave(const std::basic_string<TCHAR>& new_autosave);
+		lml_pae::string autosave() const;
+		void autosave(const lml_pae::string& new_autosave);
 		bool autosave_include_additional_data() const noexcept;
 		void autosave_include_additional_data(bool new_autosave_include_additional_data) noexcept;
 
 	private:
 		std::vector<log_ptr> logs_;
-		std::basic_string<TCHAR> autosave_;
+		lml_pae::string autosave_;
 		bool autosave_include_additional_data_;
 	};
 }

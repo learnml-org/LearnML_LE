@@ -1,0 +1,3 @@
+[submodule "mod/lml_pae"]
+	path = mod/lml_pae
+	url = https://github.com/learnml-org/LearnML_PAE.git
